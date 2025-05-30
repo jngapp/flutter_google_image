@@ -51,7 +51,9 @@ class FlutterGoogleImage {
             final googleUrl = Uri.parse('https://www.google.com/${elem.attributes['href']}');
             final imgUrl = googleUrl.queryParameters['imgurl'];
             if (imgUrl != null && imgUrl.contains('https')) {
-              imageUrls.add(imgUrl);
+              if(await isImageLink(imgUrl)) {
+                imageUrls.add(imgUrl);
+              }
             }
           }
           return completer.complete(imageUrls);
