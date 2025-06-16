@@ -54,6 +54,7 @@ class FlutterGoogleImage {
               if(await isImageLink(imgUrl)) {
                 imageUrls.add(imgUrl);
               }
+              // imageUrls.add(imgUrl);
             }
           }
           return completer.complete(imageUrls);
@@ -68,24 +69,33 @@ class FlutterGoogleImage {
       initialUrlRequest: URLRequest(url: WebUri(url)),
       initialSettings: InAppWebViewSettings(
           useOnLoadResource: false,
+          cacheEnabled: false,
+          // javaScriptEnabled: false,
           useShouldOverrideUrlLoading: false,
+          // allowContentAccess: false,
+          // allowsLinkPreview: false,
+          // blockNetworkImage: true,
+          safeBrowsingEnabled: false,
           userAgent: 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36'
       ),
+      onLoadStart: (controller, url) => print('onLoadStart: $url'),
       onLoadStop: onLoadStop,
     );
     await headlessWebView.run();
-    Future.delayed(const Duration(milliseconds: 2000), (){
-      headlessWebView.dispose();
-    });
+    // Future.delayed(const Duration(milliseconds: 2000), (){
+    //   headlessWebView.dispose();
+    // });
     // await headlessWebView.dispose();
   }
 
   Future<bool> isImageLink(String? url) async {
-    if(url == null) {
-      return false;
-    }
-    final response = await http.head(Uri.parse(url));
-    return response.headers['content-type']?.startsWith('image/') ?? false;
+    //   if(url == null) {
+    //     return false;
+    //   }
+    //   final response = await http.head(Uri.parse(url));
+    //   return response.headers['content-type']?.startsWith('image/') ?? false;
+    // }
+    final regex = RegExp(r'[\w\-]+\.(jpg|png|jpeg)', caseSensitive: false);
+    return regex.hasMatch(url ?? '');
   }
-
 }
