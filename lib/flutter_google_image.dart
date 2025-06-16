@@ -78,7 +78,7 @@ class FlutterGoogleImage {
           safeBrowsingEnabled: false,
           userAgent: 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36'
       ),
-      onLoadStart: (controller, url) => print('onLoadStart: $url'),
+      // onLoadStart: (controller, url) => print('onLoadStart: $url'),
       onLoadStop: onLoadStop,
     );
     await headlessWebView.run();
