@@ -1,7 +1,6 @@
 library flutter_google_image;
 
 import 'dart:async';
-import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/parser.dart';
 
@@ -62,32 +61,58 @@ class FlutterGoogleImage {
     imageUrls = await completer.future;
     return imageUrls;
   }
+  //
+  // Future<void> executeUrl(String url,
+  //     Function(InAppWebViewController controller, WebUri? url) onLoadStop) async {
+  //   HeadlessInAppWebView headlessWebView = HeadlessInAppWebView(
+  //     initialUrlRequest: URLRequest(url: WebUri(url)),
+  //     initialSettings: InAppWebViewSettings(
+  //         useOnLoadResource: false,
+  //         cacheEnabled: false,
+  //         // javaScriptEnabled: false,
+  //         useShouldOverrideUrlLoading: false,
+  //         // allowContentAccess: false,
+  //         // allowsLinkPreview: false,
+  //         // blockNetworkImage: true,
+  //         safeBrowsingEnabled: false,
+  //         userAgent: 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36'
+  //     ),
+  //     // onLoadStart: (controller, url) => print('onLoadStart: $url'),
+  //     onLoadStop: onLoadStop,
+  //   );
+  //   await headlessWebView.run();
+  //   // Future.delayed(const Duration(milliseconds: 2000), (){
+  //   //   headlessWebView.dispose();
+  //   // });
+  //   // await headlessWebView.dispose();
+  // }
 
   Future<void> executeUrl(String url,
       Function(InAppWebViewController controller, WebUri? url) onLoadStop) async {
+
+    final completer = Completer<void>();
     HeadlessInAppWebView headlessWebView = HeadlessInAppWebView(
       initialUrlRequest: URLRequest(url: WebUri(url)),
       initialSettings: InAppWebViewSettings(
           useOnLoadResource: false,
           cacheEnabled: false,
-          // javaScriptEnabled: false,
           useShouldOverrideUrlLoading: false,
-          // allowContentAccess: false,
-          // allowsLinkPreview: false,
-          // blockNetworkImage: true,
           safeBrowsingEnabled: false,
           userAgent: 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36'
       ),
-      // onLoadStart: (controller, url) => print('onLoadStart: $url'),
-      onLoadStop: onLoadStop,
+      onLoadStop: (controller, url) async {
+        try {
+          await onLoadStop(controller, url);
+        } finally {
+          // Dispose after processing
+          completer.complete();
+        }
+      },
     );
     await headlessWebView.run();
-    // Future.delayed(const Duration(milliseconds: 2000), (){
-    //   headlessWebView.dispose();
-    // });
-    // await headlessWebView.dispose();
+    await completer.future;
+    await headlessWebView.dispose();
   }
-
   Future<bool> isImageLink(String? url) async {
     //   if(url == null) {
     //     return false;
