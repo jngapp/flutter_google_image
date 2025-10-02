@@ -22,7 +22,7 @@ class FlutterGoogleImage {
     _url = null;
     String encodedString = Uri.encodeComponent(keyword);
     final offsetStr = 'start=$_offset';
-    _url = 'https://www.google.com/search?q=$encodedString&gbv=1&tbm=isch&$offsetStr';
+    _url = 'https://search.brave.com/images?q=$encodedString&source=web';
     _offset += _integral;
     List<String> imageUrls = [];
     imageUrls = await browse(_url!);
@@ -30,12 +30,13 @@ class FlutterGoogleImage {
   }
 
   Future<List<String>> fetchNext() async {
-    final offsetStr = 'start=$_offset';
-    _url = '$_url&$offsetStr';
-    _offset += _integral;
-    List<String> imageUrls = [];
-    imageUrls = await browse(_url!);
-    return imageUrls;
+    // final offsetStr = 'start=$_offset';
+    // _url = '$_url&$offsetStr';
+    // _offset += _integral;
+    // List<String> imageUrls = [];
+    // imageUrls = await browse(_url!);
+    // return imageUrls;
+    return [];
   }
 
   Future<List<String>> browse(String url) async {
@@ -45,15 +46,15 @@ class FlutterGoogleImage {
             (controller, url) async {
           String? html = await controller.getHtml();
           final doc = parse(html).body;
-          final elements = doc?.getElementsByTagName('span div div div div a');
+          final elements = doc?.getElementsByTagName('div div button div img');
           for (final elem in elements!) {
-            final googleUrl = Uri.parse('https://www.google.com/${elem.attributes['href']}');
-            final imgUrl = googleUrl.queryParameters['imgurl'];
-            if (imgUrl != null && imgUrl.contains('https')) {
-              if(await isImageLink(imgUrl)) {
-                imageUrls.add(imgUrl);
+            if(elem.attributes.containsKey('data-rank')) {
+              final imgUrl = elem.attributes['src'];
+              if (imgUrl != null && imgUrl.contains('https')) {
+                if(await isImageLink(imgUrl)) {
+                  imageUrls.add(imgUrl);
+                }
               }
-              // imageUrls.add(imgUrl);
             }
           }
           return completer.complete(imageUrls);
@@ -120,7 +121,8 @@ class FlutterGoogleImage {
     //   final response = await http.head(Uri.parse(url));
     //   return response.headers['content-type']?.startsWith('image/') ?? false;
     // }
-    final regex = RegExp(r'[\w\-]+\.(jpg|png|jpeg)', caseSensitive: false);
-    return regex.hasMatch(url ?? '');
+    // final regex = RegExp(r'[\w\-]+\.(jpg|png|jpeg)', caseSensitive: false);
+    // return regex.hasMatch(url ?? '');
+    return true;
   }
 }
